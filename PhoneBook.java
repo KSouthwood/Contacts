@@ -6,8 +6,13 @@ import java.util.List;
 public class PhoneBook {
     private final List<Contact> entries = new ArrayList<>();
 
-    void addEntry(String name, String surname, String phone) {
-        entries.add(new Contact(name, surname, phone));
+    void addPerson(String name, String surname, String birthday, String gender, String phone) {
+        entries.add(new Person(name, surname, birthday, gender, phone));
+        System.out.println("The record was added.");
+    }
+
+    void addOrganization(String name, String address, String phone) {
+        entries.add(new Organization(name, address, phone));
         System.out.println("The record was added.");
     }
 
@@ -23,17 +28,19 @@ public class PhoneBook {
      */
     void listEntries() {
         if (entries.size() > 0) {
-            for (int index = 0; index < entries.size(); index++) {
-                System.out.printf("%d. %s %s, %s%n",
-                        index + 1,
-                        entries.get(index).getName(),
-                        entries.get(index).getSurname(),
-                        entries.get(index).getPhoneNumber());
+            for (Contact entry : entries) {
+                if (entry instanceof Person) {
+                    System.out.printf("%d. %s %s%n", entries.indexOf(entry) + 1,
+                            ((Person) entry).getName(),
+                            ((Person) entry).getSurname());
+                } else {
+                    System.out.printf("%d. %s%n", entries.indexOf(entry) + 1,
+                            ((Organization) entry).getOrganizationName());
+                }
             }
         } else {
             System.out.println("There are no records to display.");
         }
-
     }
 
     /**
@@ -58,20 +65,22 @@ public class PhoneBook {
      */
     void editEntry(int recordNum, String field, String value) {
         if (recordNum >= 0 && recordNum < entries.size()) {
-            switch (field) {
-                case "name":
-                    entries.get(recordNum).setName(value);
-                    break;
-                case "surname":
-                    entries.get(recordNum).setSurname(value);
-                    break;
-                case "number":
-                    entries.get(recordNum).setPhoneNumber(value);
-                    break;
-            }
+            entries.get(recordNum).editField(field, value);
             System.out.println("The record was updated!");
         } else {
             System.out.println("Invalid record number!");
+        }
+    }
+
+    void printInfo(int record) {
+        System.out.println(entries.get(record).toString());
+    }
+
+    String getEntryType(int record) {
+        if (entries.get(record) instanceof Person) {
+            return "person";
+        } else {
+            return "organization";
         }
     }
 }

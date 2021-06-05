@@ -1,34 +1,45 @@
 package contacts;
 
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Contact {
-    private String name;
-    private String surname;
     private String phoneNumber;
+    private LocalDateTime dateCreated;
+    private LocalDateTime dateEdited;
 
-    Pattern separators = Pattern.compile("[- ]");
-    Pattern leadingPlus = Pattern.compile("(^\\+?[a-zA-Z0-9]+)");
-    Pattern plusWithParens = Pattern.compile("(^\\+?\\([a-zA-Z0-9]+\\))");
-    Pattern parentheses = Pattern.compile("\\([a-zA-Z0-9]{2,}\\)");
-    Pattern groupLength = Pattern.compile("[a-zA-Z0-9]{2,}");
+    // regex patterns to validate the phone number
+    static Pattern separators = Pattern.compile("[- ]");
+    static Pattern leadingPlus = Pattern.compile("(^\\+?[a-zA-Z0-9]+)");
+    static Pattern plusWithParens = Pattern.compile("(^\\+?\\([a-zA-Z0-9]+\\))");
+    static Pattern parentheses = Pattern.compile("\\([a-zA-Z0-9]{2,}\\)");
+    static Pattern groupLength = Pattern.compile("[a-zA-Z0-9]{2,}");
 
-    Contact(String name, String surname, String phoneNumber) {
-        setName(name);
-        setSurname(surname);
+    Contact(String phoneNumber) {
+        setDateCreated();
+        setDateEdited();
         setPhoneNumber(phoneNumber);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    String getDateCreated() {
+        return dateCreated.toString().substring(0, 16);
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    private void setDateCreated() {
+        this.dateCreated = LocalDateTime.now();
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    String getDateEdited() {
+        return dateEdited.toString().substring(0, 16);
+    }
+
+    void setDateEdited() {
+        this.dateEdited = LocalDateTime.now();
+    }
+
+
+    void setPhoneNumber(String phoneNumber) {
         if (isValidPhoneNumber(phoneNumber)) {
             this.phoneNumber = phoneNumber;
         } else {
@@ -37,22 +48,22 @@ public class Contact {
         }
     }
 
-    public String getName() {
-        return this.name;
-    }
-
-    public String getSurname() {
-        return this.surname;
-    }
-
-    public String getPhoneNumber() {
+    String getPhoneNumber() {
         return hasNumber() ? this.phoneNumber : "[no number]";
     }
 
-    public boolean hasNumber() {
+    boolean hasNumber() {
         return !this.phoneNumber.isEmpty();
     }
 
+    /**
+     * <p>Validate a given phone number.</p>
+     * <p>Takes a given string and parses it making sure it passes our requirements
+     * to be a valid phone number.</p>
+     *
+     * @param phoneNumber string to be validated
+     * @return true if valid
+     */
     private boolean isValidPhoneNumber(String phoneNumber) {
         String[] groups = separators.split(phoneNumber);
         boolean validNumber = true;
@@ -83,5 +94,14 @@ public class Contact {
             }
         }
         return validNumber;
+    }
+
+    void editField(String field, String value) {
+
+    }
+
+    @Override
+    public String toString() {
+        return "";
     }
 }
