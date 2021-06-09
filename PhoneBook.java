@@ -1,18 +1,24 @@
 package contacts;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PhoneBook {
-    private final List<Contact> entries = new ArrayList<>();
+public class PhoneBook implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private static List<Contact> entries = new ArrayList<>();
+    private static String fileName = "";
 
     void addPerson(String name, String surname, String birthday, String gender, String phone) {
         entries.add(new Person(name, surname, birthday, gender, phone));
+        serialize();
         System.out.println("The record was added.");
     }
 
     void addOrganization(String name, String address, String phone) {
         entries.add(new Organization(name, address, phone));
+        serialize();
         System.out.println("The record was added.");
     }
 
@@ -29,15 +35,9 @@ public class PhoneBook {
     void listEntries() {
         if (entries.size() > 0) {
             for (Contact entry : entries) {
-                if (entry instanceof Person) {
-                    System.out.printf("%d. %s %s%n", entries.indexOf(entry) + 1,
-                            ((Person) entry).getName(),
-                            ((Person) entry).getSurname());
-                } else {
-                    System.out.printf("%d. %s%n", entries.indexOf(entry) + 1,
-                            ((Organization) entry).getOrganizationName());
-                }
+                System.out.printf("%d. %s%n", entries.indexOf(entry) + 1, entry.getFullName());
             }
+            System.out.println();
         } else {
             System.out.println("There are no records to display.");
         }
@@ -50,6 +50,7 @@ public class PhoneBook {
     void deleteEntry(int recordNum) {
         if (recordNum >= 0 && recordNum < entries.size()) {
             entries.remove(recordNum);
+            serialize();
             System.out.println("The record was removed!");
         } else {
             System.out.println("Invalid record number!");
@@ -66,21 +67,73 @@ public class PhoneBook {
     void editEntry(int recordNum, String field, String value) {
         if (recordNum >= 0 && recordNum < entries.size()) {
             entries.get(recordNum).editField(field, value);
-            System.out.println("The record was updated!");
+            System.out.println("Saved");
+            serialize();
+            printRecord(recordNum);
         } else {
             System.out.println("Invalid record number!");
         }
     }
 
-    void printInfo(int record) {
+    void printRecord(int record) {
         System.out.println(entries.get(record).toString());
     }
 
-    String getEntryType(int record) {
-        if (entries.get(record) instanceof Person) {
-            return "person";
+    List<String> getFieldsOfRecord(int record) {
+        return entries.get(record).getFields();
+    }
+
+    /**
+     * <p>Finds all records that match a given query.</p>
+     * <p>Iterate through all the records finding the ones that the name matches
+     * a given query. Lists them one-by-one or prints an error if none were found.
+     * Then returns the list to the caller.</p>
+     * @param query search string to look for
+     * @return a List of all matches
+     */
+    List<Contact> search(String query) {
+        final List<Contact> results = new ArrayList<>();
+        for (Contact entry : entries) {
+            if (entry.getSearchFields().toLowerCase().contains(query)) {
+                results.add(entry);
+            }
+        }
+
+        if (!results.isEmpty()) {
+            for (Contact result : results) {
+                System.out.printf("%d. %s%n", results.indexOf(result) + 1, result.getFullName());
+            }
+            System.out.println();
         } else {
-            return "organization";
+            System.out.println("No search results found.");
+        }
+
+        return results;
+    }
+
+    int getRecordNumber(Contact record) {
+        return entries.indexOf(record);
+    }
+
+    void setFilename(String name) {
+        fileName = name;
+    }
+
+    void readFromFile() {
+        try {
+            entries = (List<Contact>) SerializationUtils.deserialize(fileName);
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void serialize() {
+        if (!fileName.isEmpty()) {
+            try {
+                SerializationUtils.serialize(entries, fileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

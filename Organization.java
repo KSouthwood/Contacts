@@ -1,8 +1,14 @@
 package contacts;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Organization extends Contact {
     private String organizationName;
     private String address;
+    final private List<String> fields =
+            new ArrayList<>(Arrays.asList("name", "address", "number"));
 
     Organization(String name, String address, String phone) {
         super(phone);
@@ -27,6 +33,21 @@ public class Organization extends Contact {
     }
 
     @Override
+    String getFullName() {
+        return getOrganizationName();
+    }
+
+    @Override
+    List<String> getFields() {
+        return fields;
+    }
+
+    @Override
+    String getSearchFields() {
+        return getOrganizationName() + getAddress() + getPhoneNumber();
+    }
+
+    @Override
     void editField(String field, String value) {
         switch (field) {
             case "name":
@@ -42,12 +63,13 @@ public class Organization extends Contact {
 
         setDateEdited();
     }
+
     @Override
     public String toString() {
         return "Organization name: " + getOrganizationName() + "\n" +
                 "Address: " + getAddress() + "\n" +
                 "Number: " + getPhoneNumber() + "\n" +
                 "Time created: " + getDateCreated() + "\n" +
-                "Time last edit: " + getDateEdited();
+                "Time last edit: " + getDateEdited() + "\n";
     }
 }

@@ -1,10 +1,11 @@
 package contacts;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Contact {
+public abstract class Contact {
     private String phoneNumber;
     private LocalDateTime dateCreated;
     private LocalDateTime dateEdited;
@@ -96,12 +97,14 @@ public class Contact {
         return validNumber;
     }
 
-    void editField(String field, String value) {
+    abstract String getFullName();
 
-    }
+    abstract List<String> getFields();
+
+    abstract String getSearchFields();
+
+    abstract void editField(String field, String value);
 
     @Override
-    public String toString() {
-        return "";
-    }
+    public abstract String toString();
 }

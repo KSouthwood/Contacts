@@ -1,12 +1,17 @@
 package contacts;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Person extends Contact {
     private String name;
     private String surname;
     private LocalDate birthday;
     private String gender;
+    final private List<String> fields =
+            new ArrayList<>(Arrays.asList("name", "surname", "birth", "gender", "number"));
 
     Person(String name, String surname, String birthday, String gender, String phone) {
         super(phone);
@@ -53,6 +58,21 @@ public class Person extends Contact {
     }
 
     @Override
+    String getFullName() {
+        return this.name + " " + this.surname;
+    }
+
+    @Override
+    List<String> getFields() {
+        return fields;
+    }
+
+    @Override
+    String getSearchFields() {
+        return getFullName() + getPhoneNumber();
+    }
+
+    @Override
     void editField(String field, String value) {
         switch (field) {
             case "name":
@@ -83,6 +103,6 @@ public class Person extends Contact {
                 "Gender: " + getGender() + "\n" +
                 "Number: " + getPhoneNumber() + "\n" +
                 "Time created: " + getDateCreated() + "\n" +
-                "Time last edit: " + getDateEdited();
+                "Time last edit: " + getDateEdited() + "\n";
     }
 }
